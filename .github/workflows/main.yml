@@ -29,11 +29,11 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
 
-      # FIX: Installs FFmpeg instantly without using slow apt-get mirrors
+      # FIXED: Changed architecture from 'linux64' to 'x64' so it passes validation
       - name: Setup FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
         with:
-          architecture: linux64
+          architecture: x64
 
       - name: Install Python Package Dependencies
         run: |
