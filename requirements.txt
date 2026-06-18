@@ -1,5 +1,6 @@
 gspread
-google-oauth2-service-account
+google-auth
+google-api-python-client
 beautifulsoup4
 requests
 playwright
