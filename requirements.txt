@@ -1,0 +1,6 @@
+gspread
+google-oauth2-service-account
+beautifulsoup4
+requests
+playwright
+boto3
