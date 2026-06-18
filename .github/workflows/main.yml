@@ -16,14 +16,22 @@ jobs:
       - name: Free Disk Space for Media Processing
         run: |
           echo "==== Pre-cleanup Disk Status ===="
-          df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h /
+          
+          echo "[LOG] Removing heavy Android SDK components..."
+          sudo rm -rf /usr/local/lib/android &
+          
+          echo "[LOG] Removing heavy .NET components..."
+          sudo rm -rf /usr/share/dotnet &
+          
+          echo "[LOG] Removing Haskell and Boost components..."
+          sudo rm -rf /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" &
+          
+          echo "[LOG] Waiting for background deletions to complete cleanly..."
+          wait
+          
           echo "==== Post-cleanup Disk Status ===="
-          df -h
+          df -h /
 
       - name: Setup Python Environment
         uses: actions/setup-python@v5
@@ -38,12 +46,11 @@ jobs:
 
       - name: Install Python Package Dependencies
         run: |
-          python -msip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Install and Initialize Playwright Webkit Drivers
         run: |
-          pip install playwright
           playwright install chromium
 
       - name: Execute Main Core Pipeline
