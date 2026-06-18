@@ -2,8 +2,8 @@ name: Video Processor and Archiver Pipeline
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Automated execution loop running every 6 hours
-  workflow_dispatch:     # Enables manual triggering from the GitHub UI
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 jobs:
   build-and-run:
@@ -17,20 +17,10 @@ jobs:
         run: |
           echo "==== Pre-cleanup Disk Status ===="
           df -h /
-          
-          echo "[LOG] Removing heavy Android SDK components..."
           sudo rm -rf /usr/local/lib/android &
-          
-          echo "[LOG] Removing heavy .NET components..."
           sudo rm -rf /usr/share/dotnet &
-          
-          echo "[LOG] Removing Haskell and Boost components..."
           sudo rm -rf /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" &
-          
-          echo "[LOG] Waiting for background deletions to complete cleanly..."
           wait
-          
-          echo "==== Post-cleanup Disk Status ===="
           df -h /
 
       - name: Setup Python Environment
@@ -38,6 +28,12 @@ jobs:
         with:
           python-version: '3.10'
           cache: 'pip'
+
+      # FIX: Installs FFmpeg instantly without using slow apt-get mirrors
+      - name: Setup FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          architecture: linux64
 
       - name: Install Python Package Dependencies
         run: |
